@@ -1,0 +1,161 @@
+\section*{Classification}
+% group points in classes $1,\cdots, k, \mathcal{D}, \mathcal{O}$\\
+% $\mathcal{D}$: doubt class, $\mathcal{O}$: outliers.\\
+% Data: $\mathcal{Z}=\{z_i=(x_i,y_i):1\leq i\leq n\}$ 
+% Assume we know $p_y(x){=}P[X{=}x|Y{=}y]$\\
+% Found: classifier $\hat{c}:\mathcal{X}{\rightarrow}\mathcal{Y}{:=}\{1,\cdots, \mathcal{D}\}$\\
+% Error: $\hat{R}(\hat{c}|\mathcal{Z})=\sum_{(x_i,y_i)\in\mathcal{Z}}\mathbb{I}_{\{\hat{c}(x_i)\not=y_i\}}$\\
+% Expected Error:\\
+% $\mathcal{R}(\hat{c}) = \sum_{y\leq k}P[y]\mathbb{E}_{x|y}[\mathbb{I}_{\{\hat{c}(x_i)\not=y_i\}}|Y=y]$
+% (add term from $\mathcal{D}$)
+
+
+% \subsection*{Loss Functions}
+% 0-1 Loss:
+% $L^{0-1}(y,z) = \begin{cases} 
+%       0 \quad \mathrm{if } (z=y)\\
+%       1 \quad \mathrm{if } (z\not=y)\\
+%   \end{cases}
+% $\\
+% Exponential Loss:\\
+% $L^{exp}(y,z)=\mathrm{exp}(-(2y-1)(2z-1))$\\
+% Logistic Loss:\\
+% $L^{log}(y,z)=\mathrm{ln}(1+\mathrm{exp}((2y-1)(2z-1)))$\\
+% Hinge Loss:\\
+% Favors sparsity. Used in SVM\\
+% $L^{hinge}(y,z)=\mathrm{max}\{0,1-(2y-1)(2z-1)\}$
+
+
+% \subsection*{Bayes Optimal Classifier}
+% Minimizes total risk for 0-1 Loss\\
+% $\hat{c}(x){=}
+% \begin{cases} 
+%       y & \mathbb{P}[y|x]>{1-d},\exists y\\
+%       \mathcal{D} & \mathbb{P}[y|x]<1-d,\forall y
+%   \end{cases}
+% $\\
+% Generalize to other loss functions
+
+% \subsection*{Discriminant Functions}
+% Functions $g_k(x)\quad1\leq k\leq K$\\
+% Decide: $g_y(x){>}g_z(x)\forall z \not{=} y {\Rightarrow}$ chose $y$\\
+% Const factor doesn't change decision.\\
+% $g_k(x)=P[y|x]\propto P[x|y]P[y] \Rightarrow$\\
+% $g_k(x){=}lnP[x|y]+lnP[y]{=}lnP[x|y]+\pi_y$
+% implements an opt. Baye classifier.
+
+% \subsection*{Decision Surface of Discriminant}
+% Solve: $g_{k_1}(x)-g_{k_2}(x)=0$
+% Special case with Gaussian classes:\\
+% if $\Sigma_y = \Sigma \Rightarrow$ linear decision surface
+% $g_k(x){=}w^T(x-x_0)\quad w{=}\Sigma^{-1}(\mu_1{-}\mu_2)$\\
+% $x_0{=}\frac{1}{2}(\mu_1{+}\mu_2){-}\frac{\sigma^2(\mu_1-\mu_2)}{(\mu_1-\mu_2)^T\Sigma^{-1}(\mu_1-\mu_2)}\mathrm{log}\frac{\pi_1}{\pi_2}$
+
+\subsection*{Linear Classifier}
+% optimal for Gaussian with equal cov. Stat. simplicity \& comput. efficiency.
+$g(x)=a^T\tilde{x}\quad a=(w_0,w)^T, \tilde{x}=(1,x)^T$\\
+$a^T\tilde{x}_i>0 \Rightarrow y_i=1, a^T\tilde{x}_i<0 \Rightarrow y_i=2$\\
+Normalization: $\tilde{x}_i\rightarrow-\tilde{x}_i$ if $y_i=2$
+Find $a$: $a^T\tilde{x}_i>0,\forall_i$!\\
+Learning w. Gradient Descent:\\
+$a(k+1)=a(k)-\eta(k)\nabla J(a(k))$\\
+$J(.)$: cost function $\eta(.)$: learning rate\\
+Newton's rule (opt. grad descent):\\
+$a(k+1)=a(k)-H^{-1}\nabla J, H=\frac{\partial^2 J}{\partial a_i \partial a_j}$\\
+Taylor: $f(x)=f(a)+(x-a)f'(a)+\dots$
+\subsection*{Perceptron Criterion}
+$J_P(a)=\sum_{\tilde{x}\in\mathcal{X}^\text{msc}}(-a^T\tilde{x})$,\\
+$\mathcal{X}^\text{msc}$: set of misclassified samples.\\
+$\Rightarrow a(k+1)=a(k)+\eta(k) \sum_{\tilde{x}\in\mathcal{X}^\text{msc}} \tilde{x}$\\
+Converges if data separable.\\
+Single sample perceptron:\\
+$a(k+1)=a(k)+\tilde{x}^k$ (misclassified).
+\subsection*{WINNOW Algorithm}
+Performs better when many dimensions are irrelevant. Search for 2 weight vectors $a^+, a^-$ (for each class). If a point is misclassified:
+$a_i^+ {\leftarrow} \alpha^{+\tilde{x}_i}a_i^+, a_i^- {\leftarrow} \alpha^{-\tilde{x}_i}a_i^-$ (class 1 err.)
+$a_i^+ {\leftarrow} \alpha^{-\tilde{x}_i}a_i^+, a_i^- {\leftarrow} \alpha^{+\tilde{x}_i}a_i^-$ (class 2 err.)
+Exponential update.
+
+\subsection*{Fisher's Linear Discriminant Analysis}
+Maximize distance of the means of the projected classes to find projection plane separating them best.\\
+proj mean: $\tilde{\mu}_{\alpha}{=}\frac{1}{n_{\alpha}}\sum_{x\in\mathcal{X}_{\alpha}}w^Tx{=}w^T\mu_{\alpha}$\\
+Dist of proj means: $|w^T(\mu_1-\mu_2)|$
+Classes proj. cov: $\tilde{\Sigma}_1{+}\tilde{\Sigma}_2{=}w^T(\Sigma_1{+}\Sigma_2)w$\\
+Fishers Criterion:\\
+$J(w)=\frac{||\mu_1-\mu_2||^2}{\tilde{\Sigma}_1{+}\tilde{\Sigma}_2}=\frac{w^T(\mu_1-\mu_2)(\mu_1-\mu_2)^Tw}{w^T(\Sigma_1{+}\Sigma_2)w}$
+Fishers Crit for Multiple Classes:\\
+$J(W)=\frac{|W^TS_BW|}{W^TS_WW}$\\
+$S_B=\sum_{i=1}^kn_k(\mu_k-\mu)(\mu_k-\mu)^T$\\
+$S_W=\sum_{i=1}^k\sum_{x\in \mathcal{D}_i}(x-\mu_i)(x-\mu_i)^T$
+
+\textbf{LDA for Multiclasses}: 
+Reformulate as $(k-1)$ ``class $\alpha$ - not class $\alpha$'' dichotomies. But some area are ambiguous
+
+\subsection*{Support Vector Machine (SVM)}
+Generalize Perceptron with margin and kernel.
+Find plane that maximizes margin $m$ s.t.:\\
+$z_ig(\mathbf{y})=z_i(\mathbf{w}^T\mathbf{y}+w_0)\geq m,\forall \mathbf{y}_i \in \mathcal{Y}$\\
+$z_i \in \{-1,+1\}\quad \mathbf{y_i} = \phi(\mathbf{x_i})$\\
+Vectors $\mathbf{y}_i$ are the support vectors
+Functional Margin Problem:\\
+minimizes $||\mathbf{w}||$ for $m{=}1$: 
+$L(\mathbf{w}, w_0, \mathbf{\alpha}) {=}$\\
+$=\frac{1}{2}\mathbf{w}^T\mathbf{w}{-}\sum_{i=1}^n\alpha_i[z_i(\mathbf{w}^T\mathbf{y}_i{}+w_0){-}1]$\\
+where $\alpha$s are Lagrange multipliers.\\
+$\frac{\partial L}{\partial w} {=} 0$ and $\frac{\partial L}{\partial w_0} {=} 0$ give us constraints\\
+$\mathbf{w}=\sum_{i=1}^n\alpha_iz_i\mathbf{y_i} \quad 0=\sum_{i=1}^n\alpha_iz_i$\\
+Replacing these in $L(\mathbf{w}, w_0, \mathbf{\alpha})$ we get\\
+$\tilde{L}(\mathbf{\alpha}){=}\sum_{i=1}^n\alpha_i{-}\frac{1}{2}\sum_{i,j=1}^n\alpha_i\alpha_jz_iz_j\mathbf{y_i}^T\mathbf{y_j}$
+with $\alpha_i\geq0\quad\mathrm{and}\quad\sum_{i=1}^n\alpha_iz_i=0$\\
+This is the dual representation.
+The optimal hyperplane is given by\\
+$\mathbf{w^*}=\sum_{i=1}^n\alpha_i^*z_i\mathbf{y_i}$\\
+$ w_0^*{=}{-}\frac{1}{2}(\mathrm{min}_{z_i=1}\mathbf{w^*}^T\mathbf{y_i}{+}\mathrm{max}_{z_i=-1}\mathbf{w^*}^T\mathbf{y_i})$\\
+where $\mathbf{\alpha}$ maximize the dual problem.\\
+Only Support Vectors ($\alpha_i\not=0$) contribute to the evaluation.\\
+Optimal Margin: $\mathbf{w}^T\mathbf{w}=\sum_{i\in SV}\alpha_i^*$\\
+Discrim.: $g^*(\mathbf{x}){=}\sum_{i\in SV}z_i\alpha_i\mathbf{y_i}^T\mathbf{y_i}{+}w^*_0$\\
+$\mathrm{class} = \mathrm{sign(\mathbf{y}^T\mathbf{w}^*+w_0^*)}$
+
+\subsection*{Soft Margin SVM}
+Introduce slack to relax constraints\\
+$z_i(\mathbf{w}^T\mathbf{y}_i+w_0)\geq m(1-\xi)$\\
+$L(\mathbf{w}, w_0,\mathbf{\xi}, \mathbf{\alpha}, \mathbf{\beta}) {=}\frac{1}{2}\mathbf{w}^T\mathbf{w}+C\sum_{i=1}^n\xi_i-$\\
+${-}\sum_{i=1}^n\alpha_i[z_i(\mathbf{w}^T\mathbf{y}_i{+}w_0){-}1{+}\xi_i]$\\
+${-}\sum_{i=1}^n\beta_i\xi_i$\\
+$C$ controls margin maximization vs. constraint violation\\
+Dual Problem same as usual SVM but with supplementary constraint:\\
+$C \geq \alpha_i \geq 0$
+
+\subsection*{Non-Linear SVM}
+Use kernel in discriminant funct: $g(\mathbf{x})=\sum_{i,j=1}^n\alpha_i\alpha_jz_iz_jK(\mathbf{x_i},\mathbf{x})$\\
+E.g solve the XOR Problem with:
+$K(x,y)=(1+x_1y_1+x_2y_2)^2$
+
+\subsection*{Multiclass SVM}
+$\forall$class $z\in\{1,2,\cdots,M\}$ we introduce $\mathbf{w}_z$ and define the margin $m$ s.t.:\\
+$(\mathbf{w}_{z_i}^T\mathbf{y}_i+w_{z_i,0})-\max_{z\not=Z_i}(\mathbf{w}_z^T\mathbf{y}_i+w_{z,0})\geq m, \forall_{\mathbf{y}_i\in \mathcal{Y}}$
+
+\subsection*{Structured SVM}
+Each sample \textbf{y} is assigned to a structured output label $z$\\
+Output Space Representation:\\
+joint feature map: $\mathbf{\psi}(z,\mathbf{y})$\\
+Scoring function: $f_{\mathbf{w}}(z,\mathbf{y})=\mathbf{w}^T\mathbf{\psi(z, \mathbf{y})}$\\
+Classify: $\hat{z}=h(\mathbf{y})\argmax_{z\in\mathcal{K}}f_{\mathbf{w}(z, \mathbf{y})}$
+
+
+\subsection*{Kernels}
+Similarity based reasoning\\
+Gram Matrix $K{=}K(\mathbf{x}_i, \mathbf{x}_i), 1{\leq} i,j{\leq} n$\\
+$K(\mathbf{x}, \mathbf{x'}) {=} \phi(\mathbf{x})^T\phi(\mathbf{x'})\quad K(\mathbf{x},\mathbf{x'}){=}K(\mathbf{x'},\mathbf{x})$\\
+$K(\mathbf{x},\mathbf{x'})$ pos.semi-def. (all EV $\geq$ 0)\\
+If $K_1$ \& $K_2$ are kernels $K$ is too:\\
+$K(\mathbf{x}, \mathbf{x'})=K_1(\mathbf{x}, \mathbf{x'})K_2(\mathbf{x}, \mathbf{x'})$\\
+$K(\mathbf{x},\mathbf{x'})=\alpha K_1(\mathbf{x}, \mathbf{x'})+\beta K_2(\mathbf{x}, \mathbf{x'})$\\
+$K(\mathbf{x},\mathbf{x'}){=}K_1(h(\mathbf{x}), h(\mathbf{x'}))\quad h:\mathcal{X}{\rightarrow}\mathcal{X}$\\
+$K(\mathbf{x},\mathbf{x'}){=}h(K_1(\mathbf{x}, \mathbf{x'}))\quad h$: poly/exp\\
+Kernel Function Examples:\\
+$K(\mathbf{x},\mathbf{x'}){=}\mathbf{x}^T\mathbf{x'}\quad K(\mathbf{x},\mathbf{x'}){=}(\mathbf{x}^T\mathbf{x'}{+}1)^p$\\
+RBF(Gauss):$K(\mathbf{x},\mathbf{x'}){=}\mathrm{exp}(-||\mathbf{x}{-}\mathbf{x'}||_2^2/h^2)$\\
+Sigmoid:$K(\mathbf{x},\mathbf{x'}){=}\mathrm{tanh}(\alpha\mathbf{x}^T\mathbf{x'}+c)$\\
+not p.s-d eg: $\mathbf{x}{=}[1,-1], \mathbf{x'}{=}[-1,2]$

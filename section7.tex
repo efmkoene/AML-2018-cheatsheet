@@ -1,0 +1,97 @@
+\section*{Neural Networks}
+% \subsection*{Multi Layer Perceptron}
+% $\{x_j\}_{j=1}^J$ input, $\{y_i\}_{i=1}^I$ output\\
+% $\{z_k^l\}_{k=1}^{K(l)}$ hidden nodes in layer $l$ $1{\leq}l{\leq}L$\\
+% $w_mk^l$ weights from $z_k^{l-1}$ to $z_m^l$\\
+% $w_ik^{L+1}$ weights from $z_k^L$ to output $y_i$\\
+% $z_k^l=h(a_k^l)=h(\sum_{m=1}^{K(l-1)}w_{km}^lz_m^{l-1})$\\
+% $y_i=\sigma(a_i^{L+1})=h(\sum_{m=1}^{K(l-1)}w_{im}^{L+1}z_m^{L})$\\
+% $\mathcal{L}(\hat{y}(\mathbf{W}, \mathbf{X}), y){=}\sum_{n=1}^N\mathcal{L}_n(\hat{y}(\mathbf{W},\mathbf{X}_n),Y_n)$\\
+% $L=0$ or $h(a)=a$ $\Rightarrow$ multiple lin. reg.
+% Layers $\Rightarrow$ generaliz. \& simplicity.\\
+% Model data generating mechanism.
+
+% \textbf{Backpropagation}\\
+% Effic. evaluation of loss derivative:\\
+% $\frac{\vartheta\mathcal{L}_n}{\vartheta w_{ik}^{L+1}}{=}\delta_i^{L+1}z_k^L \quad \frac{\vartheta\mathcal{L}_n}{\vartheta w_{mk}^{l}}{=}\delta_m^{l}z_k^{l-1}$\\
+% $\delta_i^{L+1}{=}(\hat{y_i}{-}y_i)\sigma'(\sum_{m=1}^{K(L)}w_{im}^{L+1}z_m^L)$
+% $\delta_m^{l}{=}(\sum_{r=1}^{K(l+1)}\delta_r^{l+1}w_{rm}^{l+1})\cdot$\\$\quad h'(\sum_{r=1}^{K(l-1)}w_{mr}^lz_r^{l-1})$\\
+% $w_{ij}^{l}\leftarrow w_{ij}^{l}+\eta\delta_i^lz_j^{(l-1)}$
+\subsection*{Regularizazion}
+Avoid overfitting on complex nets.
+\textbf{Early Stopping} separate data into train/error/validation sets.\\
+\textbf{Drop Out} Combine thinned nets with removed nodes.\\
+\textbf{Bayesian} priors on $w$'s
+
+\subsection*{Convolutional Neural Network}
+Modelling invariance.
+Convolutional Layers (filters on a region) \& Pooling Layers (aggregate nodes together).
+
+\subsection*{Autoencoder: explicit density}
+Data compression purposes, Output should reproduce input.$\Rightarrow$ PCA. \textit{Denoising autoencoders} reproduce data from partial observations (blanking out parts of input), more robust.
+
+\subsection*{GAN: implicit density}
+Sample from noise $\to$ training data. 2-player game: generator network fools discriminator by creating fake images, discriminator distinguishes between real and fake images. Gen: upsampling network with fractionally strided convs, Disc: convolutional network.
+
+% \subsection*{Boltzmann Machine}
+% Symmetric coupling. Visible and Hidden units. Update through voting of neighboors. Find the weights which generate a defined activity of visible nodes.
+
+% \section*{Unsupervised Learning}
+% \subsection*{Histograms}
+% $p_i = \frac{n_i}{N\Delta_i}$ $n\leq N$ in bin $i$ of size $\Delta_i$\\
+% Not scaling to multiple dimensions.
+% $K\simeq NP\quad P\simeq p(x)V \Rightarrow p(x) = \frac{K}{NV}$\\
+% $K$ \#samples in region of volume $V$, $P$ probability of falling in it. 
+% \subsection*{Kernel Density Estimator}
+% Fix $V$ and determine K.
+
+% \textbf{Parzen Window}:\\ $K=\sum_{n=1}^N\phi(\frac{x-x_n}{h})$, 
+% $ \phi(u)= \mathbb{I}_{\{||x||\leq\frac{1}{2}\}}$\\
+% $p(x)=\frac{1}{N}\sum_{n=1}^N\frac{1}{h^D}\phi(\frac{x-x_n}{h})$\\
+% This window has discontinuities.\\
+% \textbf{Gaussian Kernel}: 
+% $ \phi(u){=} \frac{\mathrm{exp}({-}\frac{1}{2}||x||^2)}{\sqrt{2\pi}}$\\
+% Result in a smoother density model\\
+% $p(x)=\frac{1}{N}\sum_{n=1}^N\frac{1}{(2\pi h^2)^{D/2}}\mathrm{exp}(-\frac{||x-x_n||^2}{2h^2})$
+% We can chose any other kernel $\phi$ with $\phi(u)\geq0\quad\int\phi(u)du=1$
+
+% \subsection*{K-Nearest Neighbors}
+% Fix $K$ and find $V$\\
+% $\hat{p}(x)=\frac{1}{V_k(x)}, v_k(x)$ minimal volume around x containing k neighbors.\\
+% \textbf{Classifier}: classify $x$ by the majority of the vote of its k-NN.\\
+% \textbf{1-NN Error Rate}
+% the 1-NN error rate $P$ is always $P^*\leq P\leq 2P^*$ where $P^*$ is the error rate of the Bayes rule.
+% $\Rightarrow$ as k goes to infinity kNN becomes optimal\\
+% KNN not optimal if class densities are very different.
+
+
+\section*{Mixture Models}
+
+\subsection*{Gaussian Mixture}
+\textbf{EM-Algorithm}\\
+Latent Variable: unknown data $\rightarrow$ What cluster generated each sample?\\
+EM does ML for unknown parameters.
+
+Latent var. $M_{\mathbf{x}c}{=}\begin{cases} 
+       1 \quad \text{c generated x}\\
+       0 \quad \text{else}
+       \end{cases} 
+$\\
+$P(\mathcal{X}, M|\mathbf{\theta}){=}\prod_{x\in\mathcal{X}}\prod_{c=1}^k(\pi_cP(\mathbf{x}|\mathbf{\theta}_c))^{M_{\mathbf{x}c}}$
+
+\textbf{E-Step}\\
+$ \gamma_{\mathbf{x}c}{=}\mathbb{E}[M_{\mathbf{x}c}|\mathcal{X},\mathbf{\theta}^{(j)}]{=}\frac{P(\mathbf{x}|c,\mathbf{\theta}^{(j)})P(c|\mathbf{\theta}^{(j)})}{P(\mathbf{x}|\mathbf{\theta}^{(j)})}$\\
+\textbf{M-Step}\\
+$\mathbf{\mu}_c^{(j+1)}=\frac{\sum_{c\in\mathcal{X}}\gamma_{\mathbf{x}c}\mathbf{x}}{\sum_{c\in\mathcal{X}}\gamma_{\mathbf{x}c}}$\\
+$(\sigma_c^2)^{(j+1)}=\frac{\sum_{c\in\mathcal{X}}\gamma_{\mathbf{x}c}(\mathbf{x}-\mathbf{\mu}_c)^2}{\sum_{c\in\mathcal{X}}\gamma_{\mathbf{x}c}}$\\
+$\pi_c^{(j+1)}=\frac{1}{|\mathcal{X}|}\sum_{c\in\mathcal{X}}\gamma_{\mathbf{x}c}$\\
+
+% \subsection*{k-Means}
+% identify clusters of data.\\
+% Given $\mathcal{X}=\{\mathbf{x}_1,\cdots,\mathbf{x}_n\}$\\
+% Find $c(.)$ and $\mathcal{Y}$ minimizing\\
+% $\mathcal{R}^km(c,\mathcal{Y})=\sum_{x\in\mathcal{X}}||x-\mu_{c(x)}||^2$
+% Assign to nearest cluster. Recompute all clusters and repeat. Also called \textbf{hard EM}. Special case of GMM w. uniform prior and diag. covariance ($\rightarrow 0$).
+
+\section*{Extra}
+$\mathcal{N}(\mu_1,\sigma^2_1)+\mathcal{N}(\mu_2,\sigma^2_2)=\mathcal{N}(\mu_1+\mu_2,\sigma_1^2+\sigma_2^2)$.

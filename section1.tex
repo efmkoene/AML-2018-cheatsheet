@@ -1,0 +1,92 @@
+\section*{Probabilities}
+\subsection*{Expectation}
+$\mathbbm{E}[X]=\int_{\Omega}xf(x)\di x=\int_{\omega}x\mathbb{P}[X{=}x]\di x$
+$\mathbb{E}_{Y|X}[Y]=\mathbb{E}_{Y}[Y|X]$\\
+$\mathbb{E}_{X,Y}[f(X,Y)]=\mathbb{E}_{X}\mathbb{E}_{Y|X}[f(X,Y)|X]$
+% $\mathbb{E}_{Y|X}[f(X,Y)|X]{=}\int_\mathbb{R}f(X,y)\mathbb{P}(y|X)\di y$
+
+\subsection*{Variance \& Covariance}
+$\mathbb{V}(X){=}\mathbb{E}[(X{-}\mathbb{E}[X])^2]{=}\mathbb{E}[X^2]{-}\mathbb{E}[X]^2$\\
+$\mathbb{V}[X+Y]{=}\mathrm{Var}[X]+\mathrm{Var}[Y]\quad X,Y \,\text{iid}$\\
+$\mathbb{V}[\alpha X]=\alpha^2\mathrm{Var}[X]$
+
+$\mathrm{Cov}(X,Y)=\mathbb{E}[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])]$
+\subsection*{Conditional Probabilities \& Bayes}
+$\mathbb{P}[X|Y]=\frac{\mathbb{P}[X,Y]}{\mathbb{P}[Y]}=\frac{\mathbb{P}[Y|X]\mathbb{P}[X]}{\mathbb{P}[Y]}$
+\subsection*{Distributions}
+$\mathcal{N}(x|\mu, \sigma^2)=\frac{e^{-(x-\mu)^2/(2\sigma^2)}}{\sqrt{2\pi\sigma^2}}$\\
+$\mathcal{N}(x|\bm{\mu}, \bm{\Sigma})= \frac{e^{-\frac{1}{2}(\mathbf{x}-\bm{\mu})^T\bm{\Sigma}^{-1}(\mathbf{x}-\bm{\mu})}}{(2\pi)^{D/2}|\bm{\Sigma}|^{1/2}} $\\
+$\mathrm{Exp}(x|\lambda){=}\lambda e^{-\lambda x}$, $\mathrm{Ber}(x|\theta){=}\theta^x (1{-}\theta)^{(1-x)}$
+Sigmoid: $\sigma(x)=1/(1+e^{-x})$
+
+\subsection*{Chebyshev \& Consistency}
+$\mathbb{P}(|X-\mathbb{E}[X]|\geq \epsilon)\leq \frac{\mathbb{V}[X]}{\epsilon^2}$\\
+$\lim_{n\rightarrow\infty} P(|\hat{\mu}-\mu |>\epsilon)=0$
+
+\subsection*{Cramer Rao lower bound}
+$\mathrm{Var}[\hat{\theta}]\geq \mathcal{I}_n(\theta)^{-1}$\\
+$\mathcal{I}_n(\theta) = -\mathbb{E}[\frac{\partial^2 \mathrm{log}[\mathcal{X}_n|\theta]}{\partial \theta^2}]$, $\hat{\theta}$ unbiased\\
+Efficiency of $\hat{\theta}$: $e(\theta_n)=\frac{1}{\mathrm{Var}[\hat{\theta}_n]\mathcal{I_n(\theta)}}$\\
+$e(\theta_n) = 1$ (efficient)\\
+$lim_{n\rightarrow\infty}e(\theta_n) = 1$ (asymp. efficient)
+
+\subsection*{Matrix Derivations}
+$\frac{\partial \mathbf{a}^T\mathbf{x}}{\partial\mathbf{x}}{=}\mathbf{a} \quad \frac{\partial \mathbf{a}^T\mathbf{Xb}}{\partial\mathbf{X}}{=}\mathbf{ab}^T \quad \frac{\partial \mathbf{a}^T\mathbf{X}^T\mathbf{b}}{\partial\mathbf{X}}{=}\mathbf{ba}^T $\\
+$\frac{\partial \mathbf{a}^T\mathbf{Xa}}{\partial\mathbf{a}}{=}\mathbf{a}^T(\mathbf{X}+\mathbf{X}^T)$,$\frac{\partial \mathbf{K}^{-1}}{\partial K}=-\mathbf{K}^{-1}\mathbf{K}'\mathbf{K}^{-1}$\\
+ $\frac{\partial}{\partial\mathbf{x}} \mathbf{f(x)}^T\mathbf{g(x)}{=}\mathbf{f(x)}^T\frac{\partial \mathbf{g(x)}}{\partial\mathbf{x}}+\mathbf{g(x)}^T\frac{\partial\mathbf{f(x)}}{\partial\mathbf{x}}$\\
+$\mathbf{X}^T\mathbf{X}$: invertible if no no zero eigenvalues.
+Inversion unstable if ratio from $\mathbf{X}$'s smallest EV to the largest is big.
+
+\section*{Parametric Density Estimation}
+\subsection*{Maximum Likelihood (MLE)}
+Likelihood: $\mathbb{P}[\mathcal{X}|\theta]=\prod_{i\leq n}p(x_i|\theta)$\\
+Find: $\hat{\theta}\in \argmax_\theta \mathbb{P}[\mathcal{X}|\theta]$\\
+Procedure: solve $\nabla_\theta \log \mathbb{P}[\mathcal{X}|\theta]\equiv 0$\\
+Consistent: converges to best $\theta_0$.
+
+\subsection*{Maximum A Posteriori (MAP)}
+Assume prior $\mathbb{P}(\theta)$\\
+Find: $\hat{\theta}\in \argmax_\theta P(\theta|\mathcal{X}) =$\\
+$=\argmax_\theta P(\mathcal{X}|\theta)P(\theta)$\\
+Solve $\nabla_\theta log P(\mathcal{X}|\theta)P(\theta)=0$
+
+\subsection*{Bayesian density learning}
+Prior Knowledge of $p(\theta)$,\\
+Find Posterior Density: $p(\theta|\mathcal{X})$.\\
+$\mathcal{X}^n=\{x_1, \cdots, x_n\}$\\
+$p(\theta|\mathcal{X}^n)=\frac{p(x_n|\theta)p(\theta|\mathcal{X}^{n-1})}{\int p(x_n|\theta)p(\theta|\mathcal{X}^{n-1} d\theta}$
+% Difficult \& needs prior knowledge. But better against overfitting.
+
+\section*{Optimization}
+\subsection*{Gradient Descent}
+$\theta^{\mathrm{new}}\leftarrow\theta^{\mathrm{old}}-\eta\nabla_{\theta}\mathcal{L}$\\
+Convergence isn't guaranteed.\\
+Less zigzag by adding momentum: \\$\theta^{(l+1)}\leftarrow\theta^{(l)}-\eta\nabla_{\theta}\mathcal{L}+\mu(\theta^{l}-\theta^{(l-1)})$
+
+\subsection*{Newton's Method}
+Use 2nd order derivation. (Hessian)
+$\theta^{\mathrm{new}}\leftarrow\theta^{\mathrm{old}}-\eta(\nabla_{\theta}\mathcal{L}/\nabla^2_{\theta}\mathcal{L})$\\
+$H=\nabla^2_{\theta}\mathcal{L}$ has to be p.d (convex func).
+
+\section*{Risks and Losses}
+% \subsection*{Expected Risk}
+Conditional Expected Risk\\
+$R(f, X) = \int_{\mathbbm{R}} \mathcal{L}(Y,f(X))\mathbb{P}(Y|X)\di Y$\\
+Total Expected Risk
+$R(f) =$\\
+$\mathbbm{E}_{X}[R(f,X)] =\int_{\mathcal{X}}R(f,X)\mathbb{P}[X]\di X =
+\int_{\mathcal{X}}\int_{\mathbbm{R}} \mathcal{L}(Y,f(X))\mathbb{P}[X,Y]\di X\di Y$.
+
+
+% \subsection*{Empirical Risk}
+Empirical Risk Minimizer (ERM) $\hat{f}$:\\
+$\hat{f} \in \argmin_{f \in \mathcal{C}} \hat{R}(\hat{f}, Z^{train})$\\
+% Training error:\\
+$\hat{R}(\hat{f}, Z^{train}) = \frac{1}{n} \sum_{i=1}^n Q(Y_i, \hat{f}(X_i))$\\
+% Test error:\\
+$\hat{R}(\hat{f}, Z^{test}) = \frac{1}{m} \sum_{i=n+1}^{n+m} Q(Y_i, \hat{f}(X_i))$\\
+% $\hat{R}(\hat{f}, Z^{test}) \neq \mathbbm{E}_{X}[R(f,X)]$
+$Z^\text{train}={(X_1,Y_1),...,(X_n,Y_n)}$ \\
+$Z^\text{test}={(X_{n+1},Y_{n+1}),...,(X_{n+m},Y_{n+m})}$
+
+

@@ -1,0 +1,67 @@
+\section*{Ensemble Methods}
+\subsection*{Combining Regressors}
+Set of estimators: $\hat{f}_1(x), \cdots, \hat{f}_B(x)$\\
+simple average: $\hat{f}(x) = \frac{1}{B}\sum_{i=1}^B\hat{f}_i(x)$
+$\mathrm{Bias}[\hat{f}(x)]=\frac{1}{B}\sum_{i=1}^B\mathrm{Bias}[f_i(x)]$\\
+$\mathbb{V}[\hat{f}(x)]\approx\frac{\sigma^2}{B}$ if the estimators are uncorrelated.
+
+\subsection*{Combining Classifiers}
+Input: classifiers $c_1(x),\cdots,c_B(x)$\\
+Infer $\hat{c}_B(x){=}\text{sgn}(\sum_{b=1}^B\alpha_b c_b(x))$\\
+with weights $\{\alpha_b\}_{b=1}^B $\\
+Requires diversity of the classifiers.
+
+\subsection*{Bagging}
+Train on bootstrapped subsets.\\
+Sample: $\mathcal{Z}=\{(x_1,y_1),\cdots(x_n,y_n)\}$\\
+$\mathcal{Z}^*$: chose i.i.d from $\mathcal{Z}$ w. replacement. Covariance small, variance similar, bias unaffected.
+
+% \subsection*{Random Forest (Bagging strategy)}
+% Collection of uncorr. decision trees.
+% Partition data space recursively. Grow the tree sufficiently deep to reduce bias.
+% Prediction with voting.
+
+\subsection*{Boosting}
+Combine uncorr. weak learners in sequence. (Weak to avoid overfitting).\\
+Coeff. of $\hat{c}_{b+1}$ depend on $\hat{c}_{b}$'s results\\
+\textbf{AdaBoost} (minimizes exp. loss)\\
+Init: $\mathcal{X}{=}\{(x_1,y_1),\cdots,(x_n,y_n)\}, w_i^{(1)}{=}\frac{1}{n}$\\
+Fit  $\hat{c}_b(x)$ to $\mathcal{X}$ weighted by $w^{(b)}$\\
+$\epsilon_b=\sum_{i=1}^nw_i^{(b)}\mathbb{I}_{\{c_b(x_i)\not=y_i\}}/\sum_{i=1}^nw_i^{(b)}$\\
+$\alpha_b = \mathrm{log}\frac{1-\epsilon_b}{\epsilon_b}>0$\\
+$w_i^{(b+1)}=w_i^{(b)}\mathrm{exp}(\alpha_i\mathbb{I}_{\{\hat{c_b(x_i)\not=y_i}\}})$\\
+return $\hat{c}_B(x){=}\mathrm{sgn}(\sum_{b{=}1}^B\alpha_bc_b(x))$\\
+Best approx. at log-odds ratio. Like stagewise-additive modeling.
+
+\subsection*{Difference}
+(1) Boosting keeps identical training data, bagging potentially varies the training data for each classifier. (2) Boosting weighs the prediction of each classifier according to its accuracy, bagging gives same importance to each.
+\subsection*{Notes}
+AdaBoost gives large weight to samples that are hard to classify: those could be outliers. For bagging, there is a chance that imbalanced data-sets lead to bootstrap samples missing a class alltogether. Fix by making the bootstrap size large enough s.t. at least one point is included.
+
+\section*{PAC learning}
+\subsection*{Function of interest}
+The probability of large excess error:\\
+$\mathbb{P}[\hat{c}_N(X)\neq c^\text{Bayes}(X)|\mathcal{Z}]<\delta$.\\
+But: could be unlucky with $\mathcal{Z}$, $c^\text{Bayes}$ not in hypoth. class, $\mathbb{P}[\dots]$ is a r.v., not scalar quality measure. Strat: average.
+$\mathbb{P}[\mathcal{R}(\hat{c})-\inf_{c\in\mathcal{C}}\mathcal{R}(c)>\epsilon]<\delta$. Where $\mathcal{R}[\hat{c}]$ is the generalization error of the trained class., should not exceed the min. generalization error achievable by more than $\epsilon$.
+Leads to:\\
+$\sum_{c\in\mathcal{C}}\mathbb{P}[\lvert \hat{\mathcal{R}}_n(c)-\mathcal{R}(c)\rvert>\epsilon]\leq 2Ne^{-2n\epsilon^2}$. Def RHS$=\delta$: $\epsilon=\sqrt{\frac{\log N - \log(\delta/2)}{2n}}$. For $N$ the size of hypothesis class, and for $n$ the num. of samples. The expected error of $c$ thus depends on $1/\sqrt{n}$ and $\log N$!
+\subsection*{Rectangle learning}
+Pick tight rectangle. Diff. between picked rectangle $\hat{R}$ and true $R$ with few examples. Rectangles are \textbf{efficiently PAC learnable}: runs in polynom. $1/\epsilon$ (error param.) and $1/\delta$ (confidence val.).
+\subsection*{Hyperplane learning}
+Hypothesis: $\sum_{i=1}^d a_ix_i + a_0$ (all possible hyperplanes through $d$-dim vector) has \#-of-possible-classifiers $2\binom{n}{d}$. In class: the classifiers $c$ and $\hat{c}$ differ for no more than $d$ data points on a plane, IF found with ERM: $\forall_{c\in\mathcal{C}} \hat{\mathcal{R}}_n(c) \geq \hat{\mathcal{R}}_n(\hat{c}) - \frac{d}{n}$.
+\subsection*{VC dimension}
+How effectively a classifier (e.g., interval, unions of intervals, circles) can select subsets. Classifying with a closed iterval: $V_C=2$, for you cannot select the begin-point and end-point but not middle point! For unions, $V_c=2k$, for unit circles $V_c=3$, for finite-dimensional vector space $V_c\leq\dim(\mathcal{G})$.
+\subsection*{From practical}
+$\mathcal{R}_n(\hat{c})-\inf_{c\in\mathcal{C}}\mathcal{R}(c) \leq 2\sup_{c\in\mathcal{C}}\lvert \hat{\mathcal{R}}_n(c) - \mathcal{R}(c) \rvert$ for any class $\mathcal{C}$. Finite class:
+$\mathbb{P}[2\sup_{c\in\mathcal{C}}\lvert \hat{\mathcal{R}}_n(c) - \mathcal{R}(c) \rvert>\epsilon]\leq 2\lvert\mathcal{C}\rvert e^{-2n\epsilon^2}$.
+Shattering $s(\mathcal{A},n)$ is the score... For half-planes $s(\mathcal{A},2)=4$, $s(\mathcal{A},3)=8$, \dots. For triangles $s(\mathcal{A},2)=4,s(\mathcal{A},3)=8,s(\mathcal{A},4)=16$, powers.
+
+\section*{Nonparametric Bayesian methods}
+$\text{Beta}(x|a,b)=B(a,b)^{-1} x^{a-1}(1-x)^{b-1}$: prob. of Bernoulli proc. after observing $a-1$ success and $b-1$ failures. Expended to multivariate case with Dirichlet distr. That will give multivar. probs, \textit{based on finite} counts! But we don't know exactly which multivar. distribution works. With more data, we update the Dirichlet distribution. Is a conjugate prior.\\
+\textbf{Stick-breaking Dirichl. proc.}. Repeatedly draw from $\text{Beta}(x|1,\alpha)$ with fixed $\alpha$, but from reducing stick: $\rho_k=\beta_k(1-\sum_{i=1}^{k-1}\rho_i)$. The prior:\\
+$\mathbb{P}[z_i=k|z_{-i},\alpha]=\begin{cases}\frac{N_{k,-i}}{\alpha+N-1} & \text{exist. }K \\ \frac{\alpha}{\alpha+N-1} & \text{oth.}\end{cases}$. Final Gibbs sampler:\\
+$\mathbb{P}[z_i=k|z_{-i},\alpha,\mu]=\begin{cases}\frac{N_{k,-i}}{\alpha+N-1}p(x_i|x_{-i,k},\mu) & \text{exist. }K \\ \frac{\alpha}{\alpha+N-1}p(x_i,\mu) & \text{oth.}\end{cases}$
+
+\subsection*{Gibbs sampling}:\\
+Init: assign all data to a cluster, with prior $\pi_i$, with $\sum_{k=1}^K\pi_i<1$ (s.t. new clusters possible). E.g. with stick-breaking. Then remove $x$ from $k$ and compute new $\theta_k$, then compute Gibbs sampler prob. (CRP), and sample the new cluster assignment $z_i\sim p(z_i|x_{-i},\theta_k)$. If cluster is empty, remove it and decrease $K$.
